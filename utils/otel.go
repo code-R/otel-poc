@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	cloudtrace "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -22,10 +22,14 @@ type Config struct {
 func InitTracing(ctx context.Context, cfg Config) (*sdktrace.TracerProvider, error) {
 	// Create exporter.
 	// projectID := "tilda-trial-dev"
-	exporter, err := texporter.New(texporter.WithProjectID(cfg.ProjectID))
+	// exporter, err := texporter.New(texporter.WithProjectID(cfg.ProjectID))
+	exporter, err := cloudtrace.New(cloudtrace.WithProjectID(cfg.ProjectID))
 	if err != nil {
-		log.Fatalf("texporter.New: %v", err)
+		return nil, err
 	}
+	// if err != nil {
+	// 	log.Fatalf("texporter.New: %v", err)
+	// }
 
 	// Identify your application using resource detection
 	res, err := resource.New(ctx,
@@ -52,6 +56,7 @@ func InitTracing(ctx context.Context, cfg Config) (*sdktrace.TracerProvider, err
 	//   tp := sdktrace.NewTracerProvider(sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.0001)), ...)
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithBatcher(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 		sdktrace.WithResource(res),
 	)
 	// defer tp.Shutdown(ctx) // flushes any pending spans, and closes connections.
