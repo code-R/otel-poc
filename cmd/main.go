@@ -44,8 +44,6 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 func installPropagators() {
 	otel.SetTextMapPropagator(
 		propagation.NewCompositeTextMapPropagator(
-			// Putting the CloudTraceOneWayPropagator first means the TraceContext propagator
-			// takes precedence if both the traceparent and the XCTC headers exist.
 			gcppropagator.CloudTraceOneWayPropagator{},
 			propagation.TraceContext{},
 			propagation.Baggage{},
@@ -56,30 +54,25 @@ func main() {
 	installPropagators()
 	ctx := context.Background()
 	gcpProject := "tilda-trial-dev"
-	// fmt.Println(common.Version)
-	fmt.Println(utils.ServiceName)
-	tp, err := utils.InitTracing(ctx, utils.Config{
+
+	shutdown, err := utils.InitTracing(ctx, utils.Config{
 		ProjectID:      gcpProject,
 		ServiceName:    utils.ServiceName,
 		ServiceVersion: utils.Version,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer shutdown()
 
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer tp.Shutdown(ctx)
 
-	// define router
 	r := chi.NewRouter()
 	r.Use(otelchi.Middleware(utils.ServiceName, otelchi.WithChiRoutes(r)))
 	r.HandleFunc("/hello", helloHandler)
-	// r.HandleFunc("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 	w.Write(([]byte)("Hello, world..!"))
-	// }))
 
-	// otelHandler := otelhttp.NewHandler(http.HandlerFunc(helloHandler), "/hello")
-	// http.Handle("/hello", otelHandler)
-	// http.ListenAndServe(":9000", nil)
 	err = http.ListenAndServe("localhost:9000", r)
 	if err != nil {
 		log.Fatalf("unable to execute server due: %v", err)
