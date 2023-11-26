@@ -5,12 +5,14 @@ go 1.20
 require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.45.0
+	github.com/blendle/zapdriver v1.3.1
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/riandyrn/otelchi v0.5.1
 	go.opentelemetry.io/contrib/detectors/gcp v1.21.1
 	go.opentelemetry.io/otel v1.21.0
 	go.opentelemetry.io/otel/sdk v1.21.0
 	go.opentelemetry.io/otel/trace v1.21.0
+	go.uber.org/zap v1.26.0
 )
 
 require (
@@ -31,6 +33,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib v1.0.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect

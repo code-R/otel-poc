@@ -38,6 +38,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	span.AddEvent("writing response", trace.WithAttributes(
 		attribute.String("body", "hello world"),
 	))
+	utils.WithContext(ctx).Info("hello world request!")
 	w.Write([]byte("Hello, world!"))
 }
 
@@ -51,6 +52,7 @@ func installPropagators() {
 }
 
 func main() {
+	utils.LoggerInit()
 	installPropagators()
 	ctx := context.Background()
 	gcpProject := "tilda-trial-dev"
