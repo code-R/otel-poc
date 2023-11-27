@@ -6,6 +6,10 @@ RUN mkdir -p /src
 
 WORKDIR /src
 
+COPY go.mod go.sum ./
+
+RUN go mod download
+
 ADD . .
 
 RUN go build -o /bin/app ./cmd

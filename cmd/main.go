@@ -33,12 +33,19 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 		attribute.String("failed here", "just testing"),
 	))
 	span.SetStatus(codes.Error, "Error occurred")
+
+	err := errors.New("this is error")
+	span.RecordError(err)
+	span.SetStatus(codes.Error, err.Error())
+
 	time.Sleep(30 * time.Millisecond)
 
 	span.AddEvent("writing response", trace.WithAttributes(
 		attribute.String("body", "hello world"),
 	))
 	utils.WithContext(ctx).Info("hello world request!")
+	utils.WithContext(ctx).Warn("this is a warning!")
+	utils.WithContext(ctx).Error("this is an error!!")
 	w.Write([]byte("Hello, world!"))
 }
 

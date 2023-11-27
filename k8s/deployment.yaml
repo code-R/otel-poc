@@ -1,0 +1,41 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: otel-poc
+  namespace: otel-poc
+  labels:
+    app.kubernetes.io/component: otel-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: otel-poc
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: otel-poc
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: google-key
+      containers:
+      - name: otel-poc
+        imagePullPolicy: Always
+        image: mven/otel-poc:v0.0.1
+        # command: ["sleep", "3600"]
+        command: ["app"]
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "64Mi"
+          limits:
+            cpu: "500m"
+            memory: "128Mi"
+      restartPolicy: Always

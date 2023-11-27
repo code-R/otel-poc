@@ -66,6 +66,10 @@ func (l *Logger) Info(args ...interface{}) {
 	l.logger.Info(args...)
 }
 
+func (l *Logger) Warn(args ...interface{}) {
+	l.logger.Warn(args...)
+}
+
 func (l *Logger) Infof(format string, args ...interface{}) {
 	l.logger.Infof(format, args...)
 }
